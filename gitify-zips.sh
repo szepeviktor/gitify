@@ -397,6 +397,8 @@ for RELEASE in "${RELEASES_KEYS[@]}"; do
     ZIP="${NAME_PREFIX}${RAW_VERSION}${SUFFIX}"
     # Deletes dotfiles also
     git rm -qrf -- * &> /dev/null || true
+    # Get modification time
+    RELEASE_DATE="$(stat -c "%Y +0000" "../${ZIP}")"
     unzip -q "../${ZIP}"
 
     # Detect one parent directory
@@ -413,7 +415,7 @@ for RELEASE in "${RELEASES_KEYS[@]}"; do
     # Commit all quietly
     git add --all
     # Release without changes causes an error
-    git commit -q -m "Release ${RAW_VERSION} from ${ZIP}"
+    git commit -q --date="$RELEASE_DATE" -m "Release ${RAW_VERSION} from ${ZIP}"
     git tag "v${RAW_VERSION}"
     echo "Processed release ${RAW_VERSION} from ${ZIP}."
 done
